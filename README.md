@@ -1,6 +1,6 @@
 # 🐳 Django ToDo App - Dockerized
 
-A simple Django ToDo application running with Docker. Just clone, configure, and run with one command!!!
+A simple Django ToDo application running with Docker. Just clone, configure, and run with one command!
 
 ## 🚀 What's Inside
 
