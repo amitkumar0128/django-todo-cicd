@@ -4,14 +4,6 @@
   become: yes
   vars:
     repo_url: "https://github.com/amitkumar0128/django-todo-docker.git"
-  
-  pre_tasks:
-    - name: Ensure Python3 and pip are installed
-      raw: |
-        sudo apt-get update
-        sudo apt-get install -y python3 python3-pip
-      register: install_python
-      changed_when: install_python.rc == 0
       
   tasks:
     - name: Wait for SSH to be ready
