@@ -61,7 +61,7 @@ resource "aws_key_pair" "ec2_key_pair" {
 
 resource "local_file" "private_key" {
   content  = tls_private_key.ec2_key.private_key_pem
-  filename = "~/.ssh/${var.key_name}.pem"
+  filename = "/home/ubuntu/.ssh/${var.key_name}.pem"
   file_permission = "0600"
 }
 
