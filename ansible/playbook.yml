@@ -1,0 +1,43 @@
+---
+- name: Configure EC2 instance
+  hosts: webservers
+  become: yes
+  vars:
+    repo_url: "https://github.com/amitkumar0128/django-todo-docker.git"
+
+  tasks:
+    - name: Wait for SSH to be ready
+      wait_for_connection:
+        timeout: 300
+
+    - name: Install Git, Docker, and Docker Compose
+      apt:
+        name: [git, docker.io, docker-compose-v2]
+        update_cache: yes
+
+    - name: Clone Todo App repo
+      git:
+        repo: "{{ repo_url }}"
+        dest: /home/ubuntu/django-todo-docker
+        clone: yes
+        update: yes
+
+    - name: Add user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Reboot for group change
+      reboot:
+        reboot_timeout: 300
+
+    - name: Wait for connection after reboot
+      wait_for_connection:
+        timeout: 300
+
+    - name: Start the app using Docker Compose
+      become: false
+      shell: docker compose up -d
+      args:
+        chdir: /home/ubuntu/django-todo-docker
