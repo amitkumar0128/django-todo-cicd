@@ -3,7 +3,7 @@
   hosts: webservers
   become: yes
   vars:
-    repo_url: "https://github.com/amitkumar0128/django-todo-docker.git"
+    repo_url: "https://github.com/amitkumar0128/django-todo-cicd.git"
       
   tasks:
     - name: Wait for SSH to be ready
