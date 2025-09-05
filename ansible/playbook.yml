@@ -18,7 +18,7 @@
     - name: Clone Todo App repo
       git:
         repo: "{{ repo_url }}"
-        dest: /home/ubuntu/django-todo-docker
+        dest: /home/ubuntu/django-todo-cicd
         clone: yes
         update: yes
 
@@ -40,4 +40,4 @@
       become: false
       shell: docker compose up -d
       args:
-        chdir: /home/ubuntu/django-todo-docker
+        chdir: /home/ubuntu/django-todo-cicd
