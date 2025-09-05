@@ -111,7 +111,7 @@ Make sure the following plugins are installed on your Jenkins instance:
 ### 1. Clone the Repo
 
 ```bash
-git clone https://github.com/amitkumar0128/django-todo-docker.git
+git clone https://github.com/amitkumar0128/django-todo-cicd.git
 cd django-todo-docker
 ```
 
