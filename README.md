@@ -22,7 +22,7 @@ A simple, production-ready **Django Todo App** deployed with a full CI/CD pipeli
 ## 🗂️ Directory Structure
 
 ```bash
-django-todo-docker/
+django-todo-cicd/
 ├── ansible/                # Ansible playbooks and inventory
 ├── terraform/              # Terraform files (main.tf, variables.tf, etc.)
 ├── Jenkinsfile             # CI/CD pipeline steps
@@ -112,7 +112,7 @@ Make sure the following plugins are installed on your Jenkins instance:
 
 ```bash
 git clone https://github.com/amitkumar0128/django-todo-cicd.git
-cd django-todo-docker
+cd django-todo-cicd
 ```
 
 ### 2. Configure Jenkins
