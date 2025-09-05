@@ -5,7 +5,7 @@ pipeline {
         stage('Clone') {
             steps {
                 echo 'Cloning the repo'
-                git url: "https://github.com/amitkumar0128/django-todo-docker", branch: "main"
+                git url: "https://github.com/amitkumar0128/django-todo-cicd", branch: "main"
             }
         }
 
