@@ -1,150 +1,195 @@
-# 🐳 Django ToDo App - Dockerized
+## 📦 Django-Todo-CICD
 
-A simple Django ToDo application running with Docker. Just clone, configure, and run with one command.
+A simple, production-ready **Django Todo App** deployed with a full CI/CD pipeline using **Jenkins**, **Terraform**, **Ansible**, **Docker Compose**, and **AWS EC2** — all in one click.
 
-## 🚀 What's Inside
+> Add tasks, mark them complete, or delete them — but more importantly, **deploy this app without touching a terminal manually.** This project automates provisioning, deployment, and teardown of the entire stack.
 
-- **Django 5.2** - Web application
-- **MySQL** - Database
-- **Nginx** - Web server
-- **Docker Compose** - Orchestrates everything
+---
 
-## 📂 Project Structure
+### 🚀 Project Features
 
-```
+* ✅ Django-based Todo Web Application
+* 🐳 Containerized with **Docker Compose**
+* 🧩 Three-tier architecture: **Django + MySQL + Nginx**
+* ⚙️ CI/CD using **Jenkins Pipeline**
+* 🌩️ Infrastructure as Code with **Terraform (AWS EC2)**
+* 🔐 Remote provisioning using **Ansible**
+* 🔄 Automatic infra teardown with confirmation prompt
+* 🧪 Fully automated from repo clone to live app
+
+---
+
+## 🗂️ Directory Structure
+
+```bash
 django-todo-docker/
-├── docker-compose.yml    # Main Docker configuration
-├── Dockerfile           # Django app container
-├── nginx/
-│   ├── Dockerfile         # Nginx container
-│   └── default.conf       # Nginx configuration
-├── todo_project/       # Django project files
-├── todo/               # Todo App
-├── requirements.txt    # Python dependencies
-├── .env               # Environment variables
-├── manage.py 
-├── .gitignore
-└── README.md
+├── ansible/                # Ansible playbooks and inventory
+├── terraform/              # Terraform files (main.tf, variables.tf, etc.)
+├── Jenkinsfile             # CI/CD pipeline steps
+├── docker-compose.yml      # Docker Compose config
+├── .env                    # Environment variables for containers
+├── manage.py               # Django entry point
+└── ...                     # Django project files
 ```
 
-## ⚡ Quick Start
+---
 
-### 1. Clone the repository
+## 🛠️ Tech Stack
+
+| Layer       | Tool                  |
+| ----------- | --------------------- |
+| Web App     | Django (Python)       |
+| Web Server  | Nginx                 |
+| Database    | MySQL                 |
+| CI/CD       | Jenkins + Jenkinsfile |
+| Provision   | Terraform (AWS EC2)   |
+| Config Mgmt | Ansible               |
+| Container   | Docker Compose        |
+| Infra       | AWS (EC2 only)        |
+
+---
+
+## ⚙️ How It Works
+
+1. **Trigger Jenkins** by pointing it to the repo.
+2. **Jenkinsfile** performs the following:
+
+   * Clones the repo
+   * Executes `terraform apply` to:
+
+     * Provision an EC2 instance
+     * Create key pair and security group
+     * Save outputs (IP + key)
+   * Waits for the instance (port 22) to become ready
+   * Generates Ansible inventory from `terraform output`
+   * Runs **Ansible Playbook** to:
+
+     * SSH into EC2
+     * Install Docker & Docker Compose
+     * Clone the repo
+     * Run the app using `docker-compose up`
+3. **App is live** at the EC2’s public IP on port 80
+4. Pipeline prompts to confirm **infra destruction**
+5. If confirmed, it runs `terraform destroy`
+
+---
+
+## 🚧 Prerequisites
+
+> These tools must be pre-installed **on the Jenkins host machine**.
+
+* Jenkins
+* Terraform
+* Ansible
+* Docker & Docker Compose
+* AWS IAM credentials stored in Jenkins credentials store
+
+---
+
+## 🧩 Required Jenkins Plugins
+
+Make sure the following plugins are installed on your Jenkins instance:
+
+- [x] Pipeline
+- [x] Pipeline: AWS Steps
+- [x] Pipeline: Input Step
+- [x] Git Plugin
+- [x] Docker Pipeline
+- [x] AWS Credentials
+- [x] Credentials
+- [x] Credentials Binding
+- [x] SSH Credentials
+- [x] Timestamper
+- [x] Workspace Cleanup
+
+> ✅ Tip: Go to `Manage Jenkins → Plugin Manager → Installed` to verify.
+
+---
+
+## 📝 Setup Instructions
+
+### 1. Clone the Repo
+
 ```bash
 git clone https://github.com/amitkumar0128/django-todo-docker.git
 cd django-todo-docker
 ```
 
-### 2. Create `.env` file
-```env
-SECRET_KEY=your-secret-key-here
-DEBUG=True
-DB_NAME=todo_db
-DB_USER=todo_user
-DB_PASSWORD=supersecret123
-DB_HOST=mysql
-DB_PORT=3306
-MYSQL_ROOT_PASSWORD=rootpassword123
-```
+### 2. Configure Jenkins
 
-### 3. Run the application
-```bash
-docker-compose up
-```
+* Set up a Jenkins pipeline project
+* In the pipeline config, point to the `Jenkinsfile` in this repo
+* Add your AWS credentials in Jenkins:
 
-That's it! 🎉
+  * Go to **Manage Jenkins > Credentials**
+  * Add **AWS Access Key ID** and **Secret** (ID: `AWS_CREDENTIALS_ID` if used in pipeline)
 
-- **Application**: http://localhost
-- **Admin Panel**: http://localhost/admin
+### 3. Trigger the Build
 
-## 🔧 Docker Skills Demonstrated
-
-### Multi-Container Setup
-- **3 containers** working together: Django app, MySQL database, Nginx proxy
-- **Container networking** - services communicate internally
-- **Volume persistence** - database data survives container restarts
-
-### Production-Ready Configuration
-- **Nginx reverse proxy** - handles static files and forwards requests
-- **Gunicorn WSGI server** - runs Django in production mode
-- **Environment variables** - secure configuration management
-- **Health checks** - ensures services are running properly
-
-### Docker Compose Features
-```yaml
-services:
-  django:    # Web application
-  mysql:     # Database
-  nginx:     # Web server
-
-volumes:
-  mysql-data:    # Persistent database storage
-
-networks:
-  django-net:       # Internal container communication
-```
-
-## 🛠️ Useful Commands
-
-### View running containers
-```bash
-docker-compose ps
-```
-
-### Check logs
-```bash
-docker-compose logs django
-docker-compose logs mysql
-```
-
-### Create admin user
-```bash
-docker-compose exec django python manage.py createsuperuser
-```
-
-### Stop everything
-```bash
-docker-compose down
-```
-
-### Remove everything (including data)
-```bash
-docker-compose down -v
-```
-
-## 🏗️ How It Works
-
-1. **Docker Compose** reads the configuration and starts 3 containers
-2. **MySQL container** starts first and creates the database
-3. **Django container** connects to MySQL and runs migrations
-4. **Nginx container** starts and proxies requests to Django
-5. All containers communicate through an internal Docker network
-
-## 🔒 Environment Variables
-
-The `.env` file keeps sensitive information secure:
-- Database passwords
-- Django secret key
-- Debug settings
-- Database connection details
-
-## 📊 What You Learn
-
-- **Docker containerization** - packaging applications
-- **Multi-container orchestration** - making services work together
-- **Environment configuration** - managing settings securely
-- **Production deployment** - using proper web servers
-- **Data persistence** - keeping database data safe
-
-## 🚀 Next Steps
-
-Once running, you can:
-1. Add new ToDo items through the web interface
-2. Manage data through Django admin panel
-3. Modify code and see changes reflected
-4. Scale services by adding more containers
-5. Deploy to cloud platforms like AWS or DigitalOcean
+* Run the pipeline
+* Watch automation magic happen 😎
 
 ---
 
-**Perfect for**: Learning Docker, Django deployment, or showcasing containerization skills!
+## 📌 CI/CD Flow Summary
+
+```mermaid
+graph TD;
+    A[Start Jenkins Pipeline] --> B[Clone Repo]
+    B --> C[Terraform Init & Apply]
+    C --> D[Provision EC2, Key, SG]
+    D --> E[Save IP & Key to tf_outputs.json]
+    E --> F[Generate Ansible Inventory]
+    F --> G[Wait for SSH port 22 open]
+    G --> H[Run Ansible Playbook]
+    H --> I[Install Docker & Clone Repo on EC2]
+    I --> J[Run docker-compose up]
+    J --> K[App Live on EC2 IP:80]
+    K --> L[Manual Confirm for Teardown]
+    L --> M[terraform destroy]
+```
+
+---
+
+## 🧪 Testing the App
+
+Once deployed, visit:
+
+```
+http://<EC2_PUBLIC_IP>
+```
+
+* Add a new task
+* Mark as completed
+* Delete tasks
+
+---
+
+## 🧼 To-Do
+
+* [ ] Add CI badges
+* [ ] Enable HTTPS with Let's Encrypt
+* [ ] Add monitoring via Prometheus & Grafana
+* [ ] Auto-scale infra using ASG (future)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!
+Feel free to submit pull requests or open issues.
+
+---
+
+## 📄 License
+
+[MIT License](LICENSE)
+
+---
+
+## 🙋‍♂️ Author
+
+**Amit Kumar**
+🔗 [GitHub](https://github.com/amitkumar0128)
+
+---
